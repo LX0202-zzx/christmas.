@@ -1,39 +1,165 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>圣诞快乐</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>圣诞树</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #christmas-tree {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .tree {
+      position: relative;
+      width: 200px;
+      height: 300px;
+    }
+    .tree-top {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 100px solid transparent;
+      border-right: 100px solid transparent;
+      border-bottom: 200px solid #006400;
+    }
+    .tree-middle {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 250px solid #008000;
+    }
+    .tree-bottom {
+      position: absolute;
+      top: 200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 200px solid transparent;
+      border-right: 200px solid transparent;
+      border-bottom: 300px solid #00A000;
+    }
+    .trunk {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 100px;
+      background-color: #8B4513;
+    }
+    .star {
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 30px solid transparent;
+      border-right: 30px solid transparent;
+      border-bottom: 90px solid #FFD700;
+      transform: rotate(35deg);
+    }
+    .message {
+      position: absolute;
+      bottom: 150px;
+      color: #FF0000;
+      font-size: 24px;
+      text-align: center;
+      text-shadow: 2px 2px 4px #000;
+    }
+    .year {
+      position: absolute;
+      bottom: 100px;
+      color: #FFFFFF;
+      font-size: 20px;
+    }
+    .snow {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #FFFFFF;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div id="christmas-tree">
+    <div class="tree">
+      <div class="tree-top"></div>
+      <div class="tree-middle"></div>
+      <div class="tree-bottom"></div>
+      <div class="trunk"></div>
+      <div class="star"></div>
+    </div>
+    <div class="message">雒鑫就是我的礼物</div>
+    <div class="year">2025</div>
+  </div>
 
-<style>
-html,body{
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    background:#02040a;
-    overflow:hidden;
-    font-family:"PingFang SC","Microsoft YaHei",Arial;
-    color:#fff;
-}
-#text{
-    position:absolute;
-    top:6%;
-    width:100%;
-    text-align:center;
-    z-index:10;
-}
-#text p{margin:6px 0;}
-canvas{
-    position:absolute;
-    left:0;
-    top:0;
-}
-.tip{
-    position:fixed;
-    bottom:16px;
-    width:100%;
-    text-align:center;
+  <script>
+    // 创建雪花
+    function createSnow() {
+      const tree = document.getElementById('christmas-tree');
+      for (let i = 0; i < 50; i++) {
+        const snow = document.createElement('div');
+        snow.className = 'snow';
+        snow.style.left = Math.random() * 100 + 'vw';
+        snow.style.top = Math.random() * 100 + 'vh';
+        tree.appendChild(snow);
+      }
+    }
+
+    // 雪花动画
+    function snowAnimation() {
+      const snows = document.querySelectorAll('.snow');
+      snows.forEach(snow => {
+        let top = parseFloat(snow.style.top);
+        let left = parseFloat(snow.style.left);
+        
+        top += 1 + Math.random() * 2;
+        left += -0.5 + Math.random();
+        
+        if (top > 100) {
+          top = 0;
+          left = Math.random() * 100;
+        }
+        
+        snow.style.top = top + 'vh';
+        snow.style.left = left + 'vw';
+      });
+      
+      requestAnimationFrame(snowAnimation);
+    }
+
+    // 页面加载完成后执行
+    window.onload = function() {
+      createSnow();
+      snowAnimation();
+    };
+  </script>
+</body>
+</html>
     font-size:13px;
     opacity:.7;
 }
