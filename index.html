@@ -1,162 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>圣诞树</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    #christmas-tree {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .tree {
-      position: relative;
-      width: 200px;
-      height: 300px;
-    }
-    .tree-top {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 100px solid transparent;
-      border-right: 100px solid transparent;
-      border-bottom: 200px solid #006400;
-    }
-    .tree-middle {
-      position: absolute;
-      top: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 150px solid transparent;
-      border-right: 150px solid transparent;
-      border-bottom: 250px solid #008000;
-    }
-    .tree-bottom {
-      position: absolute;
-      top: 200px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 200px solid transparent;
-      border-right: 200px solid transparent;
-      border-bottom: 300px solid #00A000;
-    }
-    .trunk {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 100px;
-      background-color: #8B4513;
-    }
-    .star {
-      position: absolute;
-      top: -50px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 30px solid transparent;
-      border-right: 30px solid transparent;
-      border-bottom: 90px solid #FFD700;
-      transform: rotate(35deg);
-    }
-    .message {
-      position: absolute;
-      bottom: 150px;
-      color: #FF0000;
-      font-size: 24px;
-      text-align: center;
-      text-shadow: 2px 2px 4px #000;
-    }
-    .year {
-      position: absolute;
-      bottom: 100px;
-      color: #FFFFFF;
-      font-size: 20px;
-    }
-    .snow {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: #FFFFFF;
-      border-radius: 50%;
-      opacity: 0.8;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>圣诞快乐</title>
+
+<style>
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    background:#02040a;
+    overflow:hidden;
+    font-family:"PingFang SC","Microsoft YaHei",Arial;
+    color:#fff;
+}
+#text{
+    position:absolute;
+    top:6%;
+    width:100%;
+    text-align:center;
+    z-index:10;
+}
+#text p{margin:6px 0;}
+canvas{
+    position:absolute;
+    left:0;
+    top:0;
+}
+.tip{
+    position:fixed;
+    bottom:16px;
+    width:100%;
+    text-align:center;
+    font-size:13px;
+    opacity:.7;
+}
+</style>
 </head>
+
 <body>
-  <div id="christmas-tree">
-    <div class="tree">
-      <div class="tree-top"></div>
-      <div class="tree-middle"></div>
-      <div class="tree-bottom"></div>
-      <div class="trunk"></div>
-      <div class="star"></div>
-    </div>
-    <div class="message">雒鑫就是我的礼物</div>
-    <div class="year">2025</div>
-  </div>
 
-  <script>
-    // 创建雪花
-    function createSnow() {
-      const tree = document.getElementById('christmas-tree');
-      for (let i = 0; i < 50; i++) {
-        const snow = document.createElement('div');
-        snow.className = 'snow';
-        snow.style.left = Math.random() * 100 + 'vw';
-        snow.style.top = Math.random() * 100 + 'vh';
-        tree.appendChild(snow);
-      }
-    }
+<!-- 🎵 圣诞音乐（微信可播） -->
+<audio id="bgm" loop>
+  <source src="https://cdn.pixabay.com/download/audio/2022/12/23/audio_0f5b8b6d63.mp3" type="audio/mpeg">
+</audio>
 
-    // 雪花动画
-    function snowAnimation() {
-      const snows = document.querySelectorAll('.snow');
-      snows.forEach(snow => {
-        let top = parseFloat(snow.style.top);
-        let left = parseFloat(snow.style.left);
-        
-        top += 1 + Math.random() * 2;
-        left += -0.5 + Math.random();
-        
-        if (top > 100) {
-          top = 0;
-          left = Math.random() * 100;
+<div id="text">
+    <p>🎄 圣诞快乐 🎄</p>
+    <p style="font-size:18px;">雒鑫就是我的礼物</p>
+    <p style="font-family:cursive;font-size:22px;">Merry Christmas 2025</p>
+</div>
+
+<canvas id="c"></canvas>
+<div class="tip">轻点屏幕，音乐响起 ❤️</div>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+const cx = canvas.width / 2;
+const baseY = canvas.height * 0.78;
+let t = 0;
+
+// 🌲 螺旋圣诞树（核心）
+function drawTree(){
+    for(let i=0;i<420;i++){
+        let p = i / 420;
+        let angle = p * 18 * Math.PI + t;
+        let radius = (1-p) * 160;
+        let x = cx + Math.cos(angle) * radius;
+        let y = baseY - p * 520;
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(170,220,255,${1-p})`;
+        ctx.arc(x, y, 1.6, 0, Math.PI*2);
+        ctx.fill();
+
+        // 彩灯点缀
+        if(i % 14 === 0){
+            ctx.beginPath();
+            ctx.fillStyle = `hsl(${i*6},100%,70%)`;
+            ctx.arc(x, y, 2.4, 0, Math.PI*2);
+            ctx.fill();
         }
-        
-        snow.style.top = top + 'vh';
-        snow.style.left = left + 'vw';
-      });
-      
-      requestAnimationFrame(snowAnimation);
     }
+}
 
-    // 页面加载完成后执行
-    window.onload = function() {
-      createSnow();
-      snowAnimation();
-    };
-  </script>
+// ⭐ 星星
+function drawStar(){
+    ctx.beginPath();
+    ctx.fillStyle="#ffd700";
+    ctx.shadowBlur=20;
+    ctx.shadowColor="#ffd700";
+    ctx.arc(cx, baseY-560, 7, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur=0;
+}
+
+// ❄ 雪花
+let snow=[];
+for(let i=0;i<120;i++){
+    snow.push({
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height,
+        r:Math.random()*2+0.5,
+        s:Math.random()*1.2+0.3
+    });
+}
+
+function drawSnow(){
+    ctx.fillStyle="rgba(255,255,255,.8)";
+    snow.forEach(f=>{
+        ctx.beginPath();
+        ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+        ctx.fill();
+        f.y+=f.s;
+        if(f.y>canvas.height){
+            f.y=0;
+            f.x=Math.random()*canvas.width;
+        }
+    });
+}
+
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawSnow();
+    drawTree();
+    drawStar();
+    t += 0.0025;
+    requestAnimationFrame(animate);
+}
+animate();
+
+// 🎵 微信点一下解锁音乐
+document.addEventListener("click",()=>{
+    document.getElementById("bgm").play();
+},{once:true});
+</script>
+
 </body>
 </html>
